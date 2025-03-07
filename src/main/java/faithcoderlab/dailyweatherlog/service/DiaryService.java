@@ -47,4 +47,10 @@ public class DiaryService {
         log.info("Reading diary entries for date: {}", date);
         return diaryRepository.findAllByDate(date);
     }
+
+    @Transactional(readOnly = true)
+    public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
+        log.info("Reading diary entries from {} to {}", startDate, endDate);
+        return diaryRepository.findAllByDateBetween(startDate, endDate);
+    }
 }

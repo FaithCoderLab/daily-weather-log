@@ -54,4 +54,19 @@ public class DiaryController {
         List<Diary> diaries = diaryService.readDiary(date);
         return ResponseEntity.ok(diaries);
     }
+
+    @GetMapping("/read/diaries")
+    @Operation(summary = "기간별 일기 조회", description = "시작일과 종료일 사이의 모든 일기를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 일기 조회됨"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    public ResponseEntity<List<Diary>> readDiaries(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    ) {
+        log.info("Request to read diaries from {} to {}", startDate, endDate);
+        List<Diary> diaries = diaryService.readDiaries(startDate, endDate);
+        return ResponseEntity.ok(diaries);
+    }
 }
