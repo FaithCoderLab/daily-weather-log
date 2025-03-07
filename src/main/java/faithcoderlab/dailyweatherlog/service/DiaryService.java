@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -39,5 +40,11 @@ public class DiaryService {
 
         diaryRepository.save(diary);
         log.info("Diary entry created successfully for date: {}", date);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Diary> readDiary(LocalDate date) {
+        log.info("Reading diary entries for date: {}", date);
+        return diaryRepository.findAllByDate(date);
     }
 }
