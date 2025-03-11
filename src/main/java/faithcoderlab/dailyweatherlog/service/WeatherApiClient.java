@@ -35,7 +35,7 @@ public class WeatherApiClient {
         return parseWeatherData(weatherString);
     }
 
-    private String getWeatherString() {
+    String getWeatherString() {
         String fullApiUrl = apiUrl + "?q=" + city + "&appid=" + apiKey + "&units=metric";
         log.debug("API request URL: {}", fullApiUrl);
 
