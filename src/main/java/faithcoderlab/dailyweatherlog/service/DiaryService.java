@@ -53,4 +53,22 @@ public class DiaryService {
         log.info("Reading diary entries from {} to {}", startDate, endDate);
         return diaryRepository.findAllByDateBetween(startDate, endDate);
     }
+
+    @Transactional
+    public void updateDiary(LocalDate date, String text) {
+        log.info("Updating first diary entry for date: {}", date);
+        List<Diary> diaryList = diaryRepository.findAllByDate(date);
+
+        if (diaryList.isEmpty()) {
+            log.error("No diary found for date: {}", date);
+            throw new RuntimeException("해당 날짜의 일기가 존재하지 않습니다: " + date);
+        }
+
+        Diary firstDiary = diaryList.get(0);
+
+        firstDiary.setText(text);
+
+        diaryRepository.save(firstDiary);
+        log.info("Diary entry updated successfully for date: {}", date);
+    }
 }

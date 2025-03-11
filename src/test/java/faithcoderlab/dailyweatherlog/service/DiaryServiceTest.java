@@ -10,13 +10,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DiaryServiceTest {
@@ -60,5 +60,51 @@ class DiaryServiceTest {
         assertEquals(text, savedDiary.getText());
         assertEquals("Clear", savedDiary.getWeather());
         assertEquals(22.0, savedDiary.getTemperature(), 0.1);
+    }
+
+    @Test
+    void updateDiaryTest() {
+        // given
+        LocalDate date = LocalDate.of(2024, 12, 31);
+        String newText = "Updated diary entry";
+
+        Diary existingDiary = Diary.builder()
+                .id(1L)
+                .date(date)
+                .text("Original text")
+                .weather("Cloudy")
+                .temperature(15.5)
+                .build();
+
+        List<Diary> diaries = new ArrayList<>();
+        diaries.add(existingDiary);
+
+        when(diaryRepository.findAllByDate(date)).thenReturn(diaries);
+
+        // when
+        diaryService.updateDiary(date, newText);
+
+        // then
+        ArgumentCaptor<Diary> diaryCaptor = ArgumentCaptor.forClass(Diary.class);
+        verify(diaryRepository).save(diaryCaptor.capture());
+
+        Diary updatedDiary = diaryCaptor.getValue();
+        assertEquals(date, updatedDiary.getDate());
+        assertEquals(newText, updatedDiary.getText());
+        assertEquals("Cloudy", updatedDiary.getWeather());
+        assertEquals(15.5, updatedDiary.getTemperature(), 0.1);
+    }
+
+    @Test
+    void updateDiaryWhenNoDiaryExistsTest() {
+        // given
+        LocalDate date = LocalDate.of(2024, 12, 31);
+        String newText = "Updated diary entry";
+
+        when(diaryRepository.findAllByDate(date)).thenReturn(new ArrayList<>());
+
+        // when & then
+        assertThrows(RuntimeException.class, () -> diaryService.updateDiary(date, newText));
+        verify(diaryRepository, never()).save(any(Diary.class));
     }
 }
