@@ -12,9 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,7 +36,7 @@ class DiaryServiceTest {
         String text = "Test diary entry";
         WeatherData weatherData = new WeatherService.WeatherData("Clear", 22.0);
 
-        when(weatherService.getWeatherData()).thenReturn(weatherData);
+        when(weatherService.getWeatherFromApi()).thenReturn(weatherData);
 
         // when
         diaryService.createDiary(date, text);
@@ -119,7 +117,7 @@ class DiaryServiceTest {
         LocalDate date = LocalDate.of(2024, 12, 31);
         WeatherData weatherData = new WeatherData("Sunny", 25.0);
 
-        when(weatherService.getWeatherData()).thenReturn(weatherData);
+        when(weatherService.getWeatherFromApi()).thenReturn(weatherData);
 
         // when
         diaryService.createWeatherDiary(date);

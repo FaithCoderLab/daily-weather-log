@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -23,7 +22,7 @@ public class DiaryService {
     public void createDiary(LocalDate date, String text) {
         log.info("Creating diary entry for date: {}", date);
 
-        WeatherService.WeatherData weatherData = weatherService.getWeatherData();
+        WeatherService.WeatherDto weatherData = weatherService.getWeatherData(date);
 
         Diary diary = Diary.builder()
                 .date(date)
@@ -77,7 +76,7 @@ public class DiaryService {
     public void createWeatherDiary(LocalDate date) {
         log.info("Creating weather diary entry for date: {}", date);
 
-        WeatherService.WeatherData weatherData = weatherService.getWeatherData();
+        WeatherService.WeatherDto weatherData = weatherService.getWeatherData(date);
 
         Diary diary = Diary.builder()
                 .date(date)
