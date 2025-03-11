@@ -71,4 +71,11 @@ public class DiaryService {
         diaryRepository.save(firstDiary);
         log.info("Diary entry updated successfully for date: {}", date);
     }
+
+    @Transactional
+    public void deleteDiary(LocalDate date) {
+        log.info("Deleting all diary entries for date: {}", date);
+        diaryRepository.deleteAllByDate(date);
+        log.info("Diary entry deleted successfully for date: {}", date);
+    }
 }

@@ -107,4 +107,17 @@ class DiaryServiceTest {
         assertThrows(RuntimeException.class, () -> diaryService.updateDiary(date, newText));
         verify(diaryRepository, never()).save(any(Diary.class));
     }
+
+    @Test
+    void deleteDiaryTest() {
+        // given
+        LocalDate date = LocalDate.of(2024, 12, 31);
+        doNothing().when(diaryRepository).deleteAllByDate(date);
+
+        // when
+        diaryService.deleteDiary(date);
+
+        // then
+        verify(diaryRepository).deleteAllByDate(date);
+    }
 }

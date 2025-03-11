@@ -12,8 +12,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DiaryController.class)
@@ -57,5 +56,19 @@ class DiaryControllerTest {
                 .andExpect(status().isOk());
 
         verify(diaryService).updateDiary(testDate, testText);
+    }
+
+    @Test
+    void deleteDiaryTest() throws Exception {
+        // given
+        LocalDate testDate = LocalDate.of(2020, 1, 1);
+        doNothing().when(diaryService).deleteDiary(testDate);
+
+        // when & then
+        mockMvc.perform(delete("/delete/diary")
+                        .param("date", "2020-01-01"))
+                .andExpect(status().isOk());
+
+        verify(diaryService).deleteDiary(testDate);
     }
 }

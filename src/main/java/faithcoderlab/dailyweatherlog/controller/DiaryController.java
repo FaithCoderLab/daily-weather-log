@@ -81,4 +81,18 @@ public class DiaryController {
         diaryService.updateDiary(date, text);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/delete/diary")
+    @Operation(summary = "일기 삭제", description = "특정 날짜의 모든 일기를 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 일기가 삭제됨"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    public ResponseEntity<Void> deleteDiary(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+    ) {
+        log.info("Request to delete diary for date: {}", date);
+        diaryService.deleteDiary(date);
+        return ResponseEntity.ok().build();
+    }
 }
