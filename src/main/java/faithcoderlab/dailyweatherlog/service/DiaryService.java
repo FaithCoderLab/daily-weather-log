@@ -17,25 +17,19 @@ import java.util.Map;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
-    private final WeatherApiClient weatherApiClient;
+    private final WeatherService weatherService;
 
     @Transactional
     public void createDiary(LocalDate date, String text) {
         log.info("Creating diary entry for date: {}", date);
 
-        Map<String, Object> weatherData = weatherApiClient.getWeatherData();
-
-        Map<String, Object> mainData = (Map<String, Object>) weatherData.get("main");
-        Double temperature = ((Number) mainData.get("temp")).doubleValue();
-
-        Map<String, Object> weatherDetails = (Map<String, Object>) ((java.util.List<?>) weatherData.get("weather")).get(0);
-        String weatherDescription = (String) weatherDetails.get("main");
+        WeatherService.WeatherData weatherData = weatherService.getWeatherData();
 
         Diary diary = Diary.builder()
                 .date(date)
                 .text(text)
-                .weather(weatherDescription)
-                .temperature(temperature)
+                .weather(weatherData.description())
+                .temperature(weatherData.temperature())
                 .build();
 
         diaryRepository.save(diary);
@@ -77,5 +71,22 @@ public class DiaryService {
         log.info("Deleting all diary entries for date: {}", date);
         diaryRepository.deleteAllByDate(date);
         log.info("Diary entry deleted successfully for date: {}", date);
+    }
+
+    @Transactional
+    public void createWeatherDiary(LocalDate date) {
+        log.info("Creating weather diary entry for date: {}", date);
+
+        WeatherService.WeatherData weatherData = weatherService.getWeatherData();
+
+        Diary diary = Diary.builder()
+                .date(date)
+                .text("자동 수집된 날씨 정보: " + weatherData.description() + ", " + weatherData.temperature() + "°C")
+                .weather(weatherData.description())
+                .temperature(weatherData.temperature())
+                .build();
+
+        diaryRepository.save(diary);
+        log.info("Weather diary entry created successfully for date: {}", date);
     }
 }

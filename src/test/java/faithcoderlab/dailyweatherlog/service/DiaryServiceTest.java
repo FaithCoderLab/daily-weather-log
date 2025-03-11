@@ -2,6 +2,7 @@ package faithcoderlab.dailyweatherlog.service;
 
 import faithcoderlab.dailyweatherlog.model.Diary;
 import faithcoderlab.dailyweatherlog.repository.DiaryRepository;
+import faithcoderlab.dailyweatherlog.service.WeatherService.WeatherData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,7 +26,7 @@ class DiaryServiceTest {
     private DiaryRepository diaryRepository;
 
     @Mock
-    private WeatherApiClient weatherApiClient;
+    private WeatherService weatherService;
 
     @InjectMocks
     private DiaryService diaryService;
@@ -35,18 +36,9 @@ class DiaryServiceTest {
         // given
         LocalDate date = LocalDate.of(2024, 12, 31);
         String text = "Test diary entry";
+        WeatherData weatherData = new WeatherService.WeatherData("Clear", 22.0);
 
-        Map<String, Object> weatherData = new HashMap<>();
-
-        Map<String, Object> mainData = new HashMap<>();
-        mainData.put("temp", 22.0);
-        weatherData.put("main", mainData);
-
-        Map<String, Object> weatherDetails = new HashMap<>();
-        weatherDetails.put("main", "Clear");
-        weatherData.put("weather", List.of(weatherDetails));
-
-        when(weatherApiClient.getWeatherData()).thenReturn(weatherData);
+        when(weatherService.getWeatherData()).thenReturn(weatherData);
 
         // when
         diaryService.createDiary(date, text);
@@ -119,5 +111,28 @@ class DiaryServiceTest {
 
         // then
         verify(diaryRepository).deleteAllByDate(date);
+    }
+
+    @Test
+    void createWeatherDiaryTest() {
+        // given
+        LocalDate date = LocalDate.of(2024, 12, 31);
+        WeatherData weatherData = new WeatherData("Sunny", 25.0);
+
+        when(weatherService.getWeatherData()).thenReturn(weatherData);
+
+        // when
+        diaryService.createWeatherDiary(date);
+
+        // then
+        ArgumentCaptor<Diary> diaryCaptor = ArgumentCaptor.forClass(Diary.class);
+        verify(diaryRepository).save(diaryCaptor.capture());
+
+        Diary savedDiary = diaryCaptor.getValue();
+        assertEquals(date, savedDiary.getDate());
+        assertTrue(savedDiary.getText().contains("자동 수집된 날씨 정보"));
+        assertTrue(savedDiary.getText().contains("Sunny"));
+        assertEquals("Sunny", savedDiary.getWeather());
+        assertEquals(25.0, savedDiary.getTemperature(), 0.1);
     }
 }
